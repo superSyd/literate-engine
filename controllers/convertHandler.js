@@ -2,16 +2,35 @@ function ConvertHandler() {
   
   this.getNum = function(input) {
     let result;
-    
-    let myRegex = /[^gal|^km|^lbs|^kg|^mi|^l]$/
-    result = myRegex.exec(input.toLowerCase());
+    let myNumberRegex = /^\d*$|^-?\d*$|^\d*\/?\d*$|^-?\d*\/?-?\d*$|^\.?$|^-?\.?$|^\.?\/?\.?$|^\d*\.?\d*$|^-?\d*\.?\d*$|^\d*\.?\d*\/?\d*\.?\d*$|^-?\d*\.?\d*\/?-?\d*\.?\d*$/g;
 
-    if(result == ""){
-      result = 1
-    } else
-    if(isNaN(result)){
-      result = "error";
+    let myNonUnitRegex = /[^A-z]/g
+    resultNonUnit = input.toLowerCase().match(myNonUnitRegex)
+
+        console.log(resultNonUnit, "HEERE1 getNum")
+
+    if(resultNonUnit != null){
+      result = resultNonUnit.join("");
+      result = result.match(myNumberRegex)
+
+      if(result == null){
+      result = "invalid number";
+      } else {
+      result = new Function('return '+result)();
+      result = parseFloat(result)
+      }
+              console.log(result, "HEERE2 getNum")
+ 
     }
+
+    else
+
+    if(resultNonUnit == null){
+      result = 1
+    }
+
+            console.log(result, "HEERE3 getNum")
+
 
     return result;
   };
@@ -19,22 +38,33 @@ function ConvertHandler() {
   this.getUnit = function(input) {
     let result;
 
-     let myRegex = /[gal|km|lbs|kg|mi|l]$/
-    result = myRegex.exec(input.toLowerCase);
+     let myRegex = /gal$|km$|lbs$|kg$|mi$|l$/g
+    result = input.toLowerCase().match(myRegex);
 
-    if(result == ""){
-      result = 'error';
-    } else if(result == "l"){
-      result = result.toUpperCase
+    console.log(input, "HEERE1 getUnit")
+
+    if(result != null){
+      result = result.join("");
     }
+
+    if(result == "" || result == null){
+      result = 'invalid unit';
+    } else if(result == "l"){
+      result = result.toUpperCase();
+    }
+
+        console.log(result, "HEERE2 getUnit")
+
     
-    return result;
+    return result.toString();
   };
   
   this.getReturnUnit = function(initUnit) {
     let result;
 
-    switch(initUnit.toLowerCase()){
+    let myInitUnit = initUnit.toLowerCase()
+
+    switch(myInitUnit){
       case "gal":
         result = "L";
         break;
@@ -61,7 +91,18 @@ function ConvertHandler() {
   this.spellOutUnit = function(num,unit) {
     let result;
 
-    switch(unit.toLowerCase()){
+    if(num == "invalid number" && unit == "invalid unit"){
+      return "invalid number and unit"
+    }else
+    if(num == "invalid number"){
+      return "invalid number";
+    } else if(unit == "invalid unit"){
+      return "invalid unit"
+    }else {
+
+    let myUnit = unit.toLowerCase()
+
+    switch(myUnit){
       case "gal":
         if(num > 1){
           result = 'gallons';
@@ -108,6 +149,7 @@ function ConvertHandler() {
     }
     
     return result;
+    }
   };
   
   this.convert = function(initNum, initUnit) {
@@ -116,7 +158,19 @@ function ConvertHandler() {
     const miToKm = 1.60934;
     let result;
 
-    switch(initUnit.toLowerCase()){
+    if(initNum == "invalid number" && initUnit == "invalid unit"){
+      return "invalid number and unit"
+    }else
+    if(initNum == "invalid number"){
+      return "invalid number";
+    } else if(initUnit == "invalid unit"){
+      return "invalid unit"
+    }else {
+
+      let myInitUnit = initUnit.toLowerCase()
+
+
+    switch(myInitUnit){
       case "gal":
         result = initNum * galToL;
         break;
@@ -137,13 +191,25 @@ function ConvertHandler() {
         break;
     }
     
-    return result;
+    return parseFloat(result.toFixed(5));
+
+    }
+
+    
   };
   
   this.getString = function(initNum, initUnit, returnNum, returnUnit) {
     let result;
 
-    result = { 
+    if(initNum == "invalid number" && initUnit == "invalid unit"){
+      return "invalid number and unit"
+    }else
+    if(initNum == "invalid number"){
+      return "invalid number";
+    } else if(initUnit == "invalid unit"){
+      return "invalid unit"
+    }else {
+      result = { 
       initNum: initNum,
       initUnit: initUnit,
       returnNum: returnNum,
@@ -151,7 +217,10 @@ function ConvertHandler() {
       string: initNum+" "+this.spellOutUnit(initNum,initUnit)+" converts to "+returnNum+" "+this.spellOutUnit(returnNum,returnUnit)
     }
     
-    return result;
+    return result; 
+    }
+
+    
   };
   
 }
